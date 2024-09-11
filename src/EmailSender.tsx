@@ -8,9 +8,8 @@ export const EmailSender: React.FC = () => {
   const [status, setStatus] = useState('')
 
   const sendEmail = async () => {
-    console.log('Sending email...')
+    console.log('API Key:', import.meta.env.VITE_RESEND_API_KEY) // Remove this in production!
     const resend = new Resend(import.meta.env.VITE_RESEND_API_KEY)
-    console.log('API Key:', import.meta.env.VITE_RESEND_API_KEY) // Be careful not to log this in production
 
     try {
       const result = await resend.emails.send({
@@ -22,7 +21,7 @@ export const EmailSender: React.FC = () => {
           url="https://yourdomain.com/confirm" 
         />,
       })
-      console.log('Email sent successfully:', result)
+      console.log('Resend API Response:', result)
       setStatus('Email sent successfully!')
     } catch (error) {
       console.error('Error sending email:', error)
