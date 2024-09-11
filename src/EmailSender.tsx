@@ -1,6 +1,4 @@
 import React, { useState } from 'react'
-import { Resend } from 'resend'
-import { EmailTemplate } from './EmailTemplate'
 
 export const EmailSender: React.FC = () => {
   const [recipientEmail, setRecipientEmail] = useState('')
@@ -8,23 +6,30 @@ export const EmailSender: React.FC = () => {
   const [status, setStatus] = useState('')
 
   const sendEmail = async () => {
-    const resend = new Resend(import.meta.env.VITE_RESEND_API_KEY)
-
     try {
-      const result = await resend.emails.send({
-        from: 'onboarding@resend.dev',
-        to: recipientEmail,
-        subject: 'Confirm Your Account',
-        react: <EmailTemplate 
-          recipientName={recipientName} 
-          url="https://yourdomain.com/confirm" 
-        />,
-      })
-      console.log('Resend API Response:', result)
-      setStatus('Email sent successfully!')
+      const response = await fetch('http://localhost:3001/api/send-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          to: recipientEmail,
+          subject: 'Confirm Your Account',
+          recipientName,
+          confirmUrl: "https://yourdomain.com/confirm"
+        }),
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const result = await response.json();
+      setStatus('Email sent successfully!');
+      console.log('Server response:', result);
     } catch (error) {
-      console.error('Error sending email:', error)
-      setStatus(`Error sending email: ${error instanceof Error ? error.message : 'Unknown error'}`)
+      console.error('Error details:', error);
+      setStatus(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
 
