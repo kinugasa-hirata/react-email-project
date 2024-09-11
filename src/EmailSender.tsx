@@ -8,7 +8,6 @@ export const EmailSender: React.FC = () => {
   const [status, setStatus] = useState('')
 
   const sendEmail = async () => {
-    console.log('API Key:', import.meta.env.VITE_RESEND_API_KEY) // Remove this in production!
     const resend = new Resend(import.meta.env.VITE_RESEND_API_KEY)
 
     try {
